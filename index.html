@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>iCal Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005ea2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>iCal Termin erstellen</h1>
+    <form id="eventForm">
+      <label>Titel: <input type="text" id="title" required></label>
+      <label>Ort: <input type="text" id="location"></label>
+      <label>Beschreibung: <input type="text" id="description"></label>
+      <label>Startzeit: <input type="datetime-local" id="start" required></label>
+      <label>Endzeit: <input type="datetime-local" id="end" required></label>
+      <button type="submit">.ics Datei erstellen</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const location = document.getElementById('location').value;
+      const description = document.getElementById('description').value;
+      const start = new Date(document.getElementById('start').value).toISOString().replace(/[-:]/g, '').split('.')[0];
+      const end = new Date(document.getElementById('end').value).toISOString().replace(/[-:]/g, '').split('.')[0];
+
+      const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+LOCATION:${location}
+DESCRIPTION:${description}
+DTSTART:${start}
+DTEND:${end}
+END:VEVENT
+END:VCALENDAR`;
+
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'event.ics';
+      link.click();
+    });
+  </script>
+</body>
+</html>
